@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#120e1a">
+<title>搞事貓 ⚔️ 拆家狗：世紀破壞大戰</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #120e1a;
+  --panel: rgba(26, 18, 38, 0.88);
+  --cat-pink: #ec4899;
+  --cat-glow: #f472b6;
+  --dog-orange: #f59e0b;
+  --dog-glow: #fbbf24;
+  --text: #ffffff;
+  --muted: #a8a29e;
+}
+
+* { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: radial-gradient(circle at 50% 20%, #2b1836 0%, var(--bg) 75%);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top, 14px) 14px env(safe-area-inset-bottom, 14px) 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+header { text-align: center; padding: 4px 0; }
+.eyebrow { color: var(--dog-glow); font-size: 10px; font-weight: 1000; letter-spacing: 0.35em; text-transform: uppercase; text-shadow: 0 0 8px var(--dog-glow); }
+h1 { margin: 4px 0; font-size: 20px; background: linear-gradient(90deg, var(--cat-glow), #ffffff, var(--dog-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(244,114,182,0.5)); }
+
+/* 陣營計分面板 */
+.scores { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 6px 0; }
+.side { padding: 12px 14px; border-radius: 16px; background: var(--panel); backdrop-filter: blur(10px); border: 1.5px solid rgba(236,72,153,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.side.dog-side { text-align: right; border-color: rgba(245,158,11,0.3); }
+.side-header { font-size: 11px; font-weight: 1000; margin-bottom: 4px; }
+.percent { font-size: 32px; font-weight: 1000; line-height: 1.1; font-family: monospace; letter-spacing: -0.03em; }
+.cat-side .percent { color: var(--cat-glow); text-shadow: 0 0 14px rgba(244,114,182,0.7); }
+.dog-side .percent { color: var(--dog-glow); text-shadow: 0 0 14px rgba(251,191,36,0.7); }
+
+.bar-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.bar-fill { height: 100%; width: 50%; transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.cat-side .bar-fill { background: var(--cat-glow); box-shadow: 0 0 10px var(--cat-glow); }
+.dog-side .bar-fill { background: var(--dog-glow); box-shadow: 0 0 10px var(--dog-glow); }
+
+.vs-badge { font-size: 11px; font-weight: 1000; color: #fff; background: linear-gradient(135deg, #381d3f, #1a1025); width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--cat-glow); box-shadow: 0 0 15px rgba(244,114,182,0.6); }
+
+/* 競技場 */
+.arena-container { border: 2px solid rgba(244, 132, 182, 0.4); border-radius: 20px; background: rgba(14, 10, 20, 0.95); position: relative; overflow: hidden; margin: 6px 0; box-shadow: inset 0 0 35px rgba(0,0,0,0.9), 0 0 15px rgba(168,85,247,0.2); }
+canvas { display: block; width: 100%; height: 160px; }
+
+/* 狀態列 */
+.status { text-align: center; min-height: 42px; padding: 8px 12px; border: 1.5px solid rgba(244,132,182,0.35); border-radius: 14px; background: linear-gradient(135deg, rgba(35,16,48,0.85), rgba(16,10,26,0.85)); color: #fbcfe8; font-size: 12px; font-weight: 1000; display: flex; align-items: center; justify-content: center; margin: 6px 0; text-shadow: 0 0 8px rgba(244,114,182,0.5); }
+
+/* 控制區 */
+.control-zone { display: flex; flex-direction: column; gap: 8px; }
+.moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.move { height: 62px; background: linear-gradient(145deg, rgba(30,16,45,0.9), rgba(15,8,25,0.9)); border: 1.5px solid rgba(236, 72, 153, 0.3); border-radius: 14px; color: var(--text); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: all 0.1s ease; }
+.move .glyph { font-size: 18px; filter: drop-shadow(0 0 4px rgba(255,255,255,0.6)); }
+.move .label { font-size: 11px; font-weight: 1000; color: #fbcfe8; }
+.move.active { border-color: var(--cat-glow); background: linear-gradient(145deg, rgba(78,20,55,0.95), rgba(40,10,30,0.95)); box-shadow: 0 0 20px rgba(244,114,182,0.5); transform: translateY(-2px); }
+.move:active { transform: scale(0.94); }
+
+.actions { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+.action { height: 48px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 14px; background: rgba(30,16,45,0.9); color: var(--text); font-weight: 1000; font-size: 13px; cursor: pointer; letter-spacing: 0.05em; }
+.action.primary { background: linear-gradient(135deg, var(--cat-pink), var(--dog-orange)); color: #fff; border: none; box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
+.action:active { transform: scale(0.96); }
+
+/* 結算彈窗 */
+.overlay { position: fixed; inset: 0; z-index: 10; display: none; place-items: center; padding: 20px; background: rgba(14, 6, 20, 0.94); backdrop-filter: blur(16px); }
+.overlay.show { display: grid; }
+.result-card { width: min(380px, 100%); padding: 32px 20px; text-align: center; border: 2.5px solid var(--cat-glow); border-radius: 24px; background: linear-gradient(145deg, rgba(35,16,50,0.98), rgba(15,6,24,0.98)); box-shadow: 0 0 60px rgba(236,72,153,0.6); }
+</style>
+</head>
+<body>
+
+<main class="app" id="app">
+  <header>
+    <div class="eyebrow">⚡ CAT VS DOG CHAOS ⚡</div>
+    <h1>😈 搞事貓 ⚔️ 💀 拆家狗</h1>
+  </header>
+
+  <section class="scores">
+    <div class="side cat-side">
+      <div class="side-header">😈 搞事貓</div>
+      <div class="percent" id="catScore">50%</div>
+      <div class="bar-track"><div class="bar-fill" id="catBar" style="width: 50%;"></div></div>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="side dog-side">
+      <div class="side-header">💀 拆家狗</div>
+      <div class="percent" id="dogScore">50%</div>
+      <div class="bar-track"><div class="bar-fill" id="dogBar" style="width: 50%;"></div></div>
+    </div>
+  </section>
+
+  <div class="arena-container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="status" id="status">
+    😈 搞事大戰展開！選擇搞事招式並點擊引爆破壞！
+  </div>
+
+  <div class="control-zone">
+    <section class="moves">
+      <button class="move active" data-move="topspin"><span class="glyph">😼</span><span class="label">眼神鄙視推杯</span></button>
+      <button class="move" data-move="slice"><span class="glyph">🐾</span><span class="label">筆電上跳森巴</span></button>
+      <button class="move" data-move="drop"><span class="glyph">🧶</span><span class="label">毛線球大亂a</span></button>
+    </section>
+
+    <div class="actions">
+      <button class="action primary" id="fight">💥 搞事破壞回合！</button>
+      <button class="action" id="reset">↻ 重置客廳</button>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="result-card">
+    <div style="font-size: 55px;" id="resultEmoji">🏆</div>
+    <h2 id="resultTitle" style="color: var(--cat-glow); margin: 12px 0 8px 0; font-size: 22px;">搞事貓完勝客廳！</h2>
+    <p id="resultText" style="color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 24px;">「奴才你在看哪？」搞事貓成功將客廳所有物品推落桌面！</p>
+    <button class="action primary" id="again" style="width: 100%; height: 48px;">再搞一次破壞 ↻</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  let audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  function playSound(type) {
+    initAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    if (type === 'cat') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1150, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.15);
+      osc.frequency.exponentialRampToValueAtTime(850, now + 0.25);
+    } else if (type === 'dog') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(70, now + 0.3);
+    } else {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.linearRampToValueAtTime(1600, now + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(90, now + 0.25);
+    }
+
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + (type === 'dog' ? 0.3 : 0.25));
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+
+  const $ = id => document.getElementById(id);
+  const canvas = $("canvas");
+  const ctx = canvas.getContext("2d");
+  const buttons = [...document.querySelectorAll(".move")];
+
+  const MOVES = ["topspin", "slice", "drop"];
+  const BEATS = { topspin: "slice", slice: "drop", drop: "topspin" };
+
+  const state = {
+    cat: 50,
+    dog: 50,
+    selected: "topspin",
+    round: 0,
+    ended: false,
+    ballPos: 0.5,
+    flash: 0,
+    floatingTexts: []
+  };
+
+  let W = 400, H = 160, DPR = 1, animId = 0;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    W = Math.max(100, rect.width);
+    H = Math.max(90, rect.height);
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+
+  function chooseMove(move) {
+    state.selected = move;
+    buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.move === move));
+  }
+
+  function spawnFloatingText(text, x, y, color) {
+    const angle = (Math.random() - 0.5) * 0.8;
+    const vx = Math.sin(angle) * 2;
+    const vy = -1.8 - Math.random() * 1.5;
+    state.floatingTexts.push({ text, x, y, vx, vy, alpha: 1, color });
+  }
+
+  function playRound() {
+    if (state.ended) return;
+    state.round++;
+
+    const dogMove = MOVES[Math.floor(Math.random() * MOVES.length)];
+    const catMove = state.selected;
+    const status = $("status");
+
+    if (catMove === dogMove) {
+      status.textContent = `第 ${state.round} 回合｜💥 搞事與拆家正面對撞！客廳天花板震動！`;
+      spawnFloatingText("💥 互不相讓！", W * state.ballPos, H / 2 - 25, "#ffffff");
+      playSound('clash');
+    } else if (BEATS[catMove] === dogMove) {
+      state.cat = Math.min(100, state.cat + 12);
+      state.dog = 100 - state.cat;
+      status.textContent = `第 ${state.round} 回合｜😈 搞事貓成功推落杯子！搞事度 +12%！`;
+      spawnFloatingText("😈 杯子碎裂 +12%", W * 0.28, H / 2 - 25, "#f472b6");
+      playSound('cat');
+    } else {
+      state.dog = Math.min(100, state.dog + 12);
+      state.cat = 100 - state.dog;
+      status.textContent = `第 ${state.round} 回合｜💀 拆家狗一口咬爛沙發！拆家度 +12%！`;
+      spawnFloatingText("💀 沙發化灰 +12%", W * 0.72, H / 2 - 25, "#fbbf24");
+      playSound('dog');
+    }
+
+    state.flash = 2.5;
+    updateUI();
+
+    if (state.cat >= 100 || state.dog >= 100) {
+      finishMatch(state.cat >= 100 ? "cat" : "dog");
+    }
+  }
+
+  function updateUI() {
+    const cVal = Math.round(state.cat);
+    const dVal = Math.round(state.dog);
+    $("catScore").textContent = cVal + "%";
+    $("dogScore").textContent = dVal + "%";
+    $("catBar").style.width = cVal + "%";
+    $("dogBar").style.width = dVal + "%";
+  }
+
+  function finishMatch(winner) {
+    state.ended = true;
+    const catWon = winner === "cat";
+    $("resultEmoji").textContent = catWon ? "😈😼" : "💀🐶";
+    $("resultTitle").textContent = catWon ? "搞事貓制霸客廳！" : "拆家狗夷平全家！";
+    $("resultTitle").style.color = catWon ? "var(--cat-glow)" : "var(--dog-glow)";
+    $("resultText").textContent = catWon
+      ? "「奴才，這杯子本來就該掉下去。」搞事貓以 100% 的鄙視與搞事之力獲勝！"
+      : "「汪！客廳的沙發跟拖鞋全變棉花糖啦！」拆家狗以絕對破壞力稱霸！";
+    $("status").textContent = catWon ? "【終局】搞事貓贏得客廳統治權！" : "【終局】拆家狗拆光全家奪冠！";
+    $("overlay").classList.add("show");
+  }
+
+  function resetGame() {
+    state.cat = 50;
+    state.dog = 50;
+    state.round = 0;
+    state.ended = false;
+    state.ballPos = 0.5;
+    state.floatingTexts = [];
+    $("status").textContent = "😈 搞事大戰展開！選擇搞事招式並點擊引爆破壞！";
+    $("overlay").classList.remove("show");
+    chooseMove("topspin");
+    updateUI();
+  }
+
+  function renderFrame() {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.beginPath();
+    for (let i = 0; i <= 60; i++) {
+      const t = i / 60;
+      const x = 20 + t * (W - 40);
+      const y = H / 2 + Math.sin(t * Math.PI * 2) * (H * 0.22);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.lineCap = "round";
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = "#1b1224";
+    ctx.stroke();
+
+    const split = state.cat / 100;
+    for (let side = 0; side < 2; side++) {
+      ctx.beginPath();
+      const from = side === 0 ? 0 : split;
+      const to = side === 0 ? split : 1;
+      for (let i = 0; i <= 30; i++) {
+        const t = from + (to - from) * (i / 30);
+        const x = 20 + t * (W - 40);
+        const y = H / 2 + Math.sin(t * Math.PI * 2) * (H * 0.22);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = side === 0 ? "#f472b6" : "#fbbf24";
+      ctx.stroke();
+    }
+
+    const targetBall = 0.12 + (state.cat / 100) * 0.76;
+    state.ballPos += (targetBall - state.ballPos) * 0.15;
+    const bx = 20 + state.ballPos * (W - 40);
+    const by = H / 2 + Math.sin(state.ballPos * Math.PI * 2) * (H * 0.22);
+
+    ctx.beginPath();
+    ctx.arc(bx, by, 10 + state.flash * 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = state.cat >= state.dog ? "#f472b6" : "#fbbf24";
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = state.floatingTexts[i];
+      ctx.globalAlpha = ft.alpha;
+      ctx.font = "bold 13px sans-serif";
+      ctx.fillStyle = ft.color;
+      ctx.textAlign = "center";
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ft.x += ft.vx;
+      ft.y += ft.vy;
+      ft.alpha -= 0.03;
+      if (ft.alpha <= 0) state.floatingTexts.splice(i, 1);
+    }
+    ctx.globalAlpha = 1;
+
+    state.flash *= 0.8;
+    animId = requestAnimationFrame(renderFrame);
+  }
+
+  buttons.forEach(btn => btn.addEventListener("click", () => chooseMove(btn.dataset.move)));
+  $("fight").addEventListener("click", playRound);
+  $("reset").addEventListener("click", resetGame);
+  $("again").addEventListener("click", resetGame);
+
+  window.addEventListener("resize", resizeCanvas, { passive: true });
+  resizeCanvas();
+  updateUI();
+  if (!animId) animId = requestAnimationFrame(renderFrame);
+})();
+</script>
+</body>
+</html>
