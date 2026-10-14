@@ -2,9 +2,10 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- 強制手機全螢幕與禁止手勢縮放，解決畫面縮在角落的問題 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#120e1a">
-<title>搞事貓 ⚔️ 拆家狗：世紀破壞大戰</title>
+<title>搞事貓 ⚔️ 拆家狗：手機完美全螢幕版</title>
 <style>
 :root {
   color-scheme: dark;
@@ -20,25 +21,27 @@
 
 * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
-body {
+/* 確保 html 與 body 佔滿整個手機螢幕，不留白、不偏安角落 */
+html, body {
   margin: 0;
-  width: 100vw;
-  height: 100vh;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   height: 100dvh;
   background: radial-gradient(circle at 50% 20%, #2b1836 0%, var(--bg) 75%);
   color: var(--text);
   font-family: system-ui, -apple-system, sans-serif;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+  position: fixed;
+  inset: 0;
 }
 
 .app {
-  flex: 1;
   width: 100%;
+  height: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: env(safe-area-inset-top, 14px) 14px env(safe-area-inset-bottom, 14px) 14px;
+  padding: env(safe-area-inset-top, 12px) 14px env(safe-area-inset-bottom, 12px) 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -46,51 +49,51 @@ body {
   z-index: 2;
 }
 
-header { text-align: center; padding: 4px 0; }
+header { text-align: center; padding: 2px 0; }
 .eyebrow { color: var(--dog-glow); font-size: 10px; font-weight: 1000; letter-spacing: 0.35em; text-transform: uppercase; text-shadow: 0 0 8px var(--dog-glow); }
-h1 { margin: 4px 0; font-size: 20px; background: linear-gradient(90deg, var(--cat-glow), #ffffff, var(--dog-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(244,114,182,0.5)); }
+h1 { margin: 2px 0; font-size: 19px; background: linear-gradient(90deg, var(--cat-glow), #ffffff, var(--dog-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(244,114,182,0.5)); }
 
 /* 陣營計分面板 */
-.scores { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 6px 0; }
-.side { padding: 12px 14px; border-radius: 16px; background: var(--panel); backdrop-filter: blur(10px); border: 1.5px solid rgba(236,72,153,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.scores { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; margin: 4px 0; }
+.side { padding: 10px 12px; border-radius: 14px; background: var(--panel); backdrop-filter: blur(10px); border: 1.5px solid rgba(236,72,153,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
 .side.dog-side { text-align: right; border-color: rgba(245,158,11,0.3); }
-.side-header { font-size: 11px; font-weight: 1000; margin-bottom: 4px; }
-.percent { font-size: 32px; font-weight: 1000; line-height: 1.1; font-family: monospace; letter-spacing: -0.03em; }
+.side-header { font-size: 11px; font-weight: 1000; margin-bottom: 2px; }
+.percent { font-size: 30px; font-weight: 1000; line-height: 1.1; font-family: monospace; letter-spacing: -0.03em; }
 .cat-side .percent { color: var(--cat-glow); text-shadow: 0 0 14px rgba(244,114,182,0.7); }
 .dog-side .percent { color: var(--dog-glow); text-shadow: 0 0 14px rgba(251,191,36,0.7); }
 
-.bar-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.bar-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
 .bar-fill { height: 100%; width: 50%; transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
 .cat-side .bar-fill { background: var(--cat-glow); box-shadow: 0 0 10px var(--cat-glow); }
 .dog-side .bar-fill { background: var(--dog-glow); box-shadow: 0 0 10px var(--dog-glow); }
 
-.vs-badge { font-size: 11px; font-weight: 1000; color: #fff; background: linear-gradient(135deg, #381d3f, #1a1025); width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--cat-glow); box-shadow: 0 0 15px rgba(244,114,182,0.6); }
+.vs-badge { font-size: 11px; font-weight: 1000; color: #fff; background: linear-gradient(135deg, #381d3f, #1a1025); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--cat-glow); box-shadow: 0 0 15px rgba(244,114,182,0.6); }
 
 /* 競技場 */
-.arena-container { border: 2px solid rgba(244, 132, 182, 0.4); border-radius: 20px; background: rgba(14, 10, 20, 0.95); position: relative; overflow: hidden; margin: 6px 0; box-shadow: inset 0 0 35px rgba(0,0,0,0.9), 0 0 15px rgba(168,85,247,0.2); }
-canvas { display: block; width: 100%; height: 160px; }
+.arena-container { border: 2px solid rgba(244, 132, 182, 0.4); border-radius: 18px; background: rgba(14, 10, 20, 0.95); position: relative; overflow: hidden; margin: 4px 0; box-shadow: inset 0 0 35px rgba(0,0,0,0.9), 0 0 15px rgba(168,85,247,0.2); }
+canvas { display: block; width: 100%; height: 140px; }
 
 /* 狀態列 */
-.status { text-align: center; min-height: 42px; padding: 8px 12px; border: 1.5px solid rgba(244,132,182,0.35); border-radius: 14px; background: linear-gradient(135deg, rgba(35,16,48,0.85), rgba(16,10,26,0.85)); color: #fbcfe8; font-size: 12px; font-weight: 1000; display: flex; align-items: center; justify-content: center; margin: 6px 0; text-shadow: 0 0 8px rgba(244,114,182,0.5); }
+.status { text-align: center; min-height: 38px; padding: 6px 10px; border: 1.5px solid rgba(244,132,182,0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(35,16,48,0.85), rgba(16,10,26,0.85)); color: #fbcfe8; font-size: 11px; font-weight: 1000; display: flex; align-items: center; justify-content: center; margin: 4px 0; text-shadow: 0 0 8px rgba(244,114,182,0.5); }
 
 /* 控制區 */
-.control-zone { display: flex; flex-direction: column; gap: 8px; }
-.moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.move { height: 62px; background: linear-gradient(145deg, rgba(30,16,45,0.9), rgba(15,8,25,0.9)); border: 1.5px solid rgba(236, 72, 153, 0.3); border-radius: 14px; color: var(--text); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: all 0.1s ease; }
-.move .glyph { font-size: 18px; filter: drop-shadow(0 0 4px rgba(255,255,255,0.6)); }
-.move .label { font-size: 11px; font-weight: 1000; color: #fbcfe8; }
+.control-zone { display: flex; flex-direction: column; gap: 6px; }
+.moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.move { height: 56px; background: linear-gradient(145deg, rgba(30,16,45,0.9), rgba(15,8,25,0.9)); border: 1.5px solid rgba(236, 72, 153, 0.3); border-radius: 12px; color: var(--text); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: all 0.1s ease; }
+.move .glyph { font-size: 16px; filter: drop-shadow(0 0 4px rgba(255,255,255,0.6)); }
+.move .label { font-size: 10px; font-weight: 1000; color: #fbcfe8; }
 .move.active { border-color: var(--cat-glow); background: linear-gradient(145deg, rgba(78,20,55,0.95), rgba(40,10,30,0.95)); box-shadow: 0 0 20px rgba(244,114,182,0.5); transform: translateY(-2px); }
 .move:active { transform: scale(0.94); }
 
-.actions { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
-.action { height: 48px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 14px; background: rgba(30,16,45,0.9); color: var(--text); font-weight: 1000; font-size: 13px; cursor: pointer; letter-spacing: 0.05em; }
+.actions { display: grid; grid-template-columns: 2fr 1fr; gap: 6px; }
+.action { height: 44px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(30,16,45,0.9); color: var(--text); font-weight: 1000; font-size: 12px; cursor: pointer; letter-spacing: 0.05em; }
 .action.primary { background: linear-gradient(135deg, var(--cat-pink), var(--dog-orange)); color: #fff; border: none; box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
 .action:active { transform: scale(0.96); }
 
 /* 結算彈窗 */
 .overlay { position: fixed; inset: 0; z-index: 10; display: none; place-items: center; padding: 20px; background: rgba(14, 6, 20, 0.94); backdrop-filter: blur(16px); }
 .overlay.show { display: grid; }
-.result-card { width: min(380px, 100%); padding: 32px 20px; text-align: center; border: 2.5px solid var(--cat-glow); border-radius: 24px; background: linear-gradient(145deg, rgba(35,16,50,0.98), rgba(15,6,24,0.98)); box-shadow: 0 0 60px rgba(236,72,153,0.6); }
+.result-card { width: min(380px, 100%); padding: 28px 20px; text-align: center; border: 2.5px solid var(--cat-glow); border-radius: 22px; background: linear-gradient(145deg, rgba(35,16,50,0.98), rgba(15,6,24,0.98)); box-shadow: 0 0 60px rgba(236,72,153,0.6); }
 </style>
 </head>
 <body>
@@ -139,10 +142,10 @@ canvas { display: block; width: 100%; height: 160px; }
 
 <div class="overlay" id="overlay">
   <div class="result-card">
-    <div style="font-size: 55px;" id="resultEmoji">🏆</div>
-    <h2 id="resultTitle" style="color: var(--cat-glow); margin: 12px 0 8px 0; font-size: 22px;">搞事貓完勝客廳！</h2>
-    <p id="resultText" style="color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 24px;">「奴才你在看哪？」搞事貓成功將客廳所有物品推落桌面！</p>
-    <button class="action primary" id="again" style="width: 100%; height: 48px;">再搞一次破壞 ↻</button>
+    <div style="font-size: 50px;" id="resultEmoji">🏆</div>
+    <h2 id="resultTitle" style="color: var(--cat-glow); margin: 10px 0 6px 0; font-size: 20px;">搞事貓完勝客廳！</h2>
+    <p id="resultText" style="color: var(--muted); font-size: 12px; line-height: 1.4; margin-bottom: 20px;">「奴才你在看哪？」搞事貓成功將客廳所有物品推落桌面！</p>
+    <button class="action primary" id="again" style="width: 100%; height: 44px;">再搞一次破壞 ↻</button>
   </div>
 </div>
 
@@ -209,12 +212,12 @@ canvas { display: block; width: 100%; height: 160px; }
     floatingTexts: []
   };
 
-  let W = 400, H = 160, DPR = 1, animId = 0;
+  let W = 400, H = 140, DPR = 1, animId = 0;
 
   function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
     W = Math.max(100, rect.width);
-    H = Math.max(90, rect.height);
+    H = Math.max(80, rect.height);
     DPR = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * DPR);
     canvas.height = Math.round(H * DPR);
@@ -229,7 +232,7 @@ canvas { display: block; width: 100%; height: 160px; }
   function spawnFloatingText(text, x, y, color) {
     const angle = (Math.random() - 0.5) * 0.8;
     const vx = Math.sin(angle) * 2;
-    const vy = -1.8 - Math.random() * 1.5;
+    const vy = -1.6 - Math.random() * 1.2;
     state.floatingTexts.push({ text, x, y, vx, vy, alpha: 1, color });
   }
 
@@ -243,23 +246,23 @@ canvas { display: block; width: 100%; height: 160px; }
 
     if (catMove === dogMove) {
       status.textContent = `第 ${state.round} 回合｜💥 搞事與拆家正面對撞！客廳天花板震動！`;
-      spawnFloatingText("💥 互不相讓！", W * state.ballPos, H / 2 - 25, "#ffffff");
+      spawnFloatingText("💥 互不相讓！", W * state.ballPos, H / 2 - 20, "#ffffff");
       playSound('clash');
     } else if (BEATS[catMove] === dogMove) {
       state.cat = Math.min(100, state.cat + 12);
       state.dog = 100 - state.cat;
       status.textContent = `第 ${state.round} 回合｜😈 搞事貓成功推落杯子！搞事度 +12%！`;
-      spawnFloatingText("😈 杯子碎裂 +12%", W * 0.28, H / 2 - 25, "#f472b6");
+      spawnFloatingText("😈 杯子碎裂 +12%", W * 0.28, H / 2 - 20, "#f472b6");
       playSound('cat');
     } else {
       state.dog = Math.min(100, state.dog + 12);
       state.cat = 100 - state.dog;
       status.textContent = `第 ${state.round} 回合｜💀 拆家狗一口咬爛沙發！拆家度 +12%！`;
-      spawnFloatingText("💀 沙發化灰 +12%", W * 0.72, H / 2 - 25, "#fbbf24");
+      spawnFloatingText("💀 沙發化灰 +12%", W * 0.72, H / 2 - 20, "#fbbf24");
       playSound('dog');
     }
 
-    state.flash = 2.5;
+    state.flash = 2.2;
     updateUI();
 
     if (state.cat >= 100 || state.dog >= 100) {
@@ -313,7 +316,7 @@ canvas { display: block; width: 100%; height: 160px; }
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.lineCap = "round";
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 8;
     ctx.strokeStyle = "#1b1224";
     ctx.stroke();
 
@@ -328,7 +331,7 @@ canvas { display: block; width: 100%; height: 160px; }
         const y = H / 2 + Math.sin(t * Math.PI * 2) * (H * 0.22);
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 3.5;
       ctx.strokeStyle = side === 0 ? "#f472b6" : "#fbbf24";
       ctx.stroke();
     }
@@ -339,17 +342,17 @@ canvas { display: block; width: 100%; height: 160px; }
     const by = H / 2 + Math.sin(state.ballPos * Math.PI * 2) * (H * 0.22);
 
     ctx.beginPath();
-    ctx.arc(bx, by, 10 + state.flash * 3.5, 0, Math.PI * 2);
+    ctx.arc(bx, by, 9 + state.flash * 3, 0, Math.PI * 2);
     ctx.fillStyle = state.cat >= state.dog ? "#f472b6" : "#fbbf24";
     ctx.fill();
     ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
       const ft = state.floatingTexts[i];
       ctx.globalAlpha = ft.alpha;
-      ctx.font = "bold 13px sans-serif";
+      ctx.font = "bold 12px sans-serif";
       ctx.fillStyle = ft.color;
       ctx.textAlign = "center";
       ctx.fillText(ft.text, ft.x, ft.y);
@@ -377,3 +380,15 @@ canvas { display: block; width: 100%; height: 160px; }
 </script>
 </body>
 </html>
+ 
+
+
+
+
+  
+   
+
+  
+   
+
+   
